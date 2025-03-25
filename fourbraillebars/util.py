@@ -13,8 +13,8 @@ class FreeMem_m(NamedTuple):
 
     @classmethod
     def from_call(cls) -> "FreeMem_m":
-        out = subprocess.call("free -m", shell=True)
-        for ln in out.splitlines():
+        cp = subprocess.run("free -m", shell=True, stdout=subprocess.PIPE)
+        for ln in cp.stdout.decode('utf-8').splitlines():
             if ln.startswith('Mem:'):
                 mem = TotalUsedFree(*map(int, ln.split()[1:4]))
             if ln.startswith('Swap:'):
@@ -28,13 +28,13 @@ class CPU_usage(NamedTuple):
     idle: float
     wait_io: float
     hi: float  # hardware interrupts
-    sw: float  # software interrupts
+    si: float  # software interrupts
     st: float  # steal vm
 
     @classmethod
     def from_call(cls) -> "CPU_usage":
-        out = subprocess.call('top -b -n1', shell=True)
-        for ln in out.splitlines():
+        cp = subprocess.run('top -b -n1', shell=True, stdout=subprocess.PIPE)
+        for ln in cp.stdout.decode('utf-8').splitlines():
             if ln.startswith('%Cpu(s):'):
                 _, parts = ln.split(':')
                 vals = {k: v for v, k in map(str.split, parts.split(','))}
@@ -53,8 +53,8 @@ class NvidiaGpuUsage(NamedTuple):
 
     @classmethod
     def from_call(cls) -> "NvidiaGpuUsage":
-        out = subprocess.call('nvidia-smi -q -x')
-        root = EU.fromstring(out)
+        cp = subprocess.run('nvidia-smi -q -x'.split(), stdout=subprocess.PIPE)
+        root = ET.fromstring(cp.stdout.decode('utf-8'))
         gpu = root.find("gpu")
         fan_speed = gpu.find("fan_speed").text.strip()[:-2]
         mem_use_mib = gpu.find("fb_memory_usage/used").text.strip()[:-4]
@@ -72,4 +72,5 @@ class NvidiaGpuUsage(NamedTuple):
 def cpu_ram_nvidia():
     free_m = FreeMem_m.from_call()
     cpu = CPU_usage.from_call()
-    gpu = NvidiaGpuUsage()
+    gpu = NvidiaGpuUsage.from_call()
+    return cpu.user, free_m.mem.used/free_m.mem.total*100, gpu.gpu_percent, gpu.mem_use/gpu.mem_tot

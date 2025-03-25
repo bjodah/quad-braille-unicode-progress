@@ -22,7 +22,10 @@ def render4(p1, p2, p3, p4):
     return render_braille_progress(*map(_percent, [p1,p2,p3,p4]))
 
 
+def cpu_ram_gpu_vram():
+    return '|'+render_braille_progress(*cpu_ram_nvidia())+'|'
+
 if __name__ == '__main__':
     import argh
-    argh.dispatch_commands([render4, cpu_ram_nvidia])
+    argh.dispatch_commands([render4, cpu_ram_gpu_vram])
     sys.exit(os.EX_OK)
