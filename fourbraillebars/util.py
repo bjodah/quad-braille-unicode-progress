@@ -7,12 +7,12 @@ class TotalUsedFree(NamedTuple):
     used: int
     free: int
 
-class FreeMem_m(NamedTuple):
+class FreeMem(NamedTuple):
     mem: TotalUsedFree
     swap: TotalUsedFree
 
     @classmethod
-    def from_call(cls) -> "FreeMem_m":
+    def from_call(cls) -> "FreeMem":
         cp = subprocess.run("free -m", shell=True, stdout=subprocess.PIPE)
         for ln in cp.stdout.decode('utf-8').splitlines():
             if ln.startswith('Mem:'):
@@ -70,7 +70,10 @@ class NvidiaGpuUsage(NamedTuple):
 
 
 def cpu_ram_nvidia():
-    free_m = FreeMem_m.from_call()
+    free_m = FreeMem.from_call()
+    #free_m = FreeMem_m(TotalUsedFree(1,0,1), TotalUsedFree(1,0,1))
     cpu = CPU_usage.from_call()
+    #cpu = CPU_usage(0,0,0,0,0,0,0,0)
     gpu = NvidiaGpuUsage.from_call()
+    #gpu = NvidiaGpuUsage(1,1,1,1,1,1)
     return cpu.user, free_m.mem.used/free_m.mem.total*100, gpu.gpu_percent, gpu.mem_use/gpu.mem_tot
