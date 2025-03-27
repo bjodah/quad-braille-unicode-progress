@@ -76,4 +76,4 @@ def cpu_ram_nvidia():
     #cpu = CPU_usage(0,0,0,0,0,0,0,0)
     gpu = NvidiaGpuUsage.from_call()
     #gpu = NvidiaGpuUsage(1,1,1,1,1,1)
-    return cpu.user, free_m.mem.used/free_m.mem.total*100, gpu.gpu_percent, gpu.mem_use/gpu.mem_tot
+    return cpu.user, free_m.mem.used/free_m.mem.total*100, gpu.gpu_percent, gpu.mem_use/gpu.mem_tot*100
