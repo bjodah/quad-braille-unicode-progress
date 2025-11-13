@@ -20,13 +20,6 @@
 #include <errno.h>
 #include <math.h>
 
-/*--------------------------------------------------------------
- * Helper: round a double to the nearest multiple of 5 (as int)
- *--------------------------------------------------------------*/
-static int round_to_nearest_5(double n)
-{
-    return (int)(5.0 * round(n / 5.0));
-}
 
 /*--------------------------------------------------------------
  * Convert four percentages (0‑100) into a Unicode Braille string.
@@ -40,10 +33,10 @@ static int round_to_nearest_5(double n)
  * The resulting Unicode characters are formed by adding the
  * dot‑bit‑mask to 0x2800 (Braille Pattern Blank).
  *--------------------------------------------------------------*/
-static void render_braille_progress(char *out, int p1, int p2, int p3, int p4)
+static void render_braille_progress(char *out, int *prog)
 {
     /* allocate space for 10 Unicode characters + terminating NUL */
-    const int prog[4] = {p1, p2, p3, p4};
+    //const int prog[4] = {p1, p2, p3, p4};
     size_t pos = 0;      /* write position inside out[] */
 
     for (int col = 0; col < 10; ++col) {
@@ -136,12 +129,11 @@ int main(int argc, char *argv[])
         }
         if (v < 0) v = 0;
         if (v > 100) v = 100;
-        vals[i] = round_to_nearest_5((double)v);
+        vals[i] = 5*((v+2)/5);
     }
 
-    char bar[41];
-    render_braille_progress(bar, vals[0], vals[1], vals[2], vals[3]);
-    //printf("%s\n", bar);
+    char bar[31];
+    render_braille_progress(bar, vals);
     puts(bar);
     return EXIT_SUCCESS;
 }
