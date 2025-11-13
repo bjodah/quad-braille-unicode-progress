@@ -22,5 +22,16 @@ Run tests with: `pytest`
 - Submit pull requests for improvements
 - Ensure tests pass
 
+## C version
+gpt-oss-120b wrote a C version in a few seconds. With minor tweak (avoid malloc of fixed size buffer),
+it's checked in as `fourbraillebars.c`:
+```shell-session
+$ gcc -O2 -march=native -Wall -Wextra -o fourbbars fourbraillebars.c -lm
+$ ./fourbbars 75 55 25 100
+⣿⣿⣟⣛⣛⣋⣉⣁⣀⣀
+$ hyperfine --warmup 1000 -N "./fourbbars 75 55 25 100"
+... 351 µs
+```
+
 ## License
 MIT License - see [LICENSE](LICENSE)

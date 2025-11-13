@@ -4,9 +4,6 @@ import subprocess
 from . import render_braille_progress
 from .util import cpu_ram_nvidia
 
-# def main(p1=100, p2=100, p3=100, p4=100):
-#     s = render_braille_progress(p1,p2,p3,p4)
-#     print(s)
 
 def _percent(arg: str) -> int:
     arg = arg.strip()
