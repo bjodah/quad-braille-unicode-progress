@@ -60,7 +60,9 @@ class NvidiaGpuUsage(NamedTuple):
         mem_use_mib = gpu.find("fb_memory_usage/used").text.strip()[:-4]
         mem_tot_mib = gpu.find("fb_memory_usage/total").text.strip()[:-4]
         gpu_util = gpu.find("utilization/gpu_util").text.strip()[:-2]
-        power_draw = gpu.find("gpu_power_readings/power_draw").text.strip()[:-2]
+        if (power_draw := gpu.find("gpu_power_readings/power_draw")) is None:
+            power_draw = gpu.find("gpu_power_readings/instant_power_draw")
+        power_draw = power_draw.text.strip()[:-2]
         temp = gpu.find("temperature/gpu_temp").text.strip()[:-2]
 
         return cls(fan_percent=float(fan_speed), mem_use=float(mem_use_mib) / 1024,
